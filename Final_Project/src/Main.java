@@ -30,9 +30,11 @@ public class Main {
                     System.out.print("Phone: ");
                     String phone = sc.nextLine();
                     System.out.print("Membership: ");
-                    String mem = sc.nextLine();
+                    String mem = sc.nextLine().toUpperCase(); // convert to uppercase
+                    Customer.Membership membership = Customer.Membership.valueOf(mem);
 
-                    Customer c = new Customer(email, fn, ln, phone, mem);
+                    Customer c = new Customer(email, fn, ln, phone, membership);
+
                  
                     break;
 
