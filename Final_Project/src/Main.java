@@ -9,7 +9,7 @@ public class Main {
         int choice;
 
         do {
-            System.out.println("\n---  Management Sytem ---");
+            System.out.println("\n---  Management System ---");
             System.out.println("1. Add Customer");
             System.out.println("2. View Customers");
             System.out.println("3. Update Customer Email");
