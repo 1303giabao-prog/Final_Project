@@ -1,7 +1,7 @@
 import java.sql.*;
 import java.util.Scanner;
 
-public class GymManagmentSystem {
+public class Database_Connectivity {
 	
 	 // Global connection variable
     static Connection conn = null;
@@ -12,12 +12,6 @@ public class GymManagmentSystem {
     private static final String DATABASE = "demo211";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "P@ssw0rd"; 
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		   connect();      // Connect to DB
-	       disconnect(); 
-	}
 
 
 	
