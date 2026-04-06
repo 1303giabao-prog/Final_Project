@@ -1,13 +1,18 @@
 public class Customer {
 
+    // Enum for membership types
+    public enum Membership {
+        NONE, BASIC, PREMIUM, VIP
+    }
+
     private String email;
     private String firstName;
     private String lastName;
     private String phoneNum;
-    private String membership;
+    private Membership membership;
 
     // Constructor
-    public Customer(String email, String firstName, String lastName, String phoneNum, String membership) {
+    public Customer(String email, String firstName, String lastName, String phoneNum, Membership membership) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -48,11 +53,11 @@ public class Customer {
         this.phoneNum = phoneNum;
     }
 
-    public String getMembership() {
+    public Membership getMembership() {
         return membership;
     }
 
-    public void setMembership(String membership) {
+    public void setMembership(Membership membership) {
         this.membership = membership;
     }
 
@@ -64,7 +69,7 @@ public class Customer {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phoneNum='" + phoneNum + '\'' +
-                ", membership='" + membership + '\'' +
+                ", membership=" + membership +
                 '}';
     }
 }
