@@ -7,7 +7,7 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         int choice;
-
+//Tools to manage the gym system. Choose to modify/view/update/delete data
         do {
             System.out.println("\n---  Management System ---");
             System.out.println("1. Add Customer");

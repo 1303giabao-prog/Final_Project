@@ -2,7 +2,7 @@ public class Customer {
 
     // Enum for membership types
     public enum Membership {
-        NONE, BASIC, PREMIUM, VIP
+        NONE, BASIC, PREMIUM
     }
 
     private String email;
