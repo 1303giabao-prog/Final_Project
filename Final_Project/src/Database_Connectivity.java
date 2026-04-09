@@ -22,10 +22,7 @@ public class Database_Connectivity {
                                             SERVER, PORT, DATABASE, USERNAME, PASSWORD);
         try {
             conn = DriverManager.getConnection(DB_URL);
-            //create table
-            statement = conn.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS customers (customerID INT AUTO_INCREMENT PRIMARY KEY, email VARCHAR(100) NOT NULL, firstName VARCHAR(50), lastName VARCHAR(50), phoneNum VARCHAR(20), membership VARCHAR(20));";
-            statement.execute(sql);
+            
             System.out.println("DB connection established.");
         } catch(SQLException e) {
             System.out.println("Problem with connecting to DB: " + e.getMessage());
