@@ -10,7 +10,7 @@ public class Database_Connectivity {
     // Database credentials.
     private static final String SERVER = "localhost";
     private static final int PORT = 3306;
-    private static final String DATABASE = "demo211";
+    private static final String DATABASE = "gymmanagementsystem";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "P@ssw0rd"; 
 

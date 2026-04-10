@@ -6,16 +6,14 @@ public class Customer {
     }
 
     private String email;
-    private String firstName;
-    private String lastName;
+    private String name;
     private String phoneNum;
     private Membership membership;
 
     // Constructor
-    public Customer(String email, String firstName, String lastName, String phoneNum, Membership membership) {
+    public Customer(String email, String name, String phoneNum, Membership membership) {
         this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name= name;
         this.phoneNum = phoneNum;
         this.membership = membership;
     }
@@ -29,22 +27,15 @@ public class Customer {
         this.email = email;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
+   
     public String getPhoneNum() {
         return phoneNum;
     }
@@ -66,8 +57,7 @@ public class Customer {
     public String toString() {
         return "Customer{" +
                 "email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
+                ", name='" + name + '\'' +
                 ", phoneNum='" + phoneNum + '\'' +
                 ", membership=" + membership +
                 '}';
