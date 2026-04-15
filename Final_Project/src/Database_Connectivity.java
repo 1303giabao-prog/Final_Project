@@ -17,7 +17,9 @@ public class Database_Connectivity {
 
 	
 	//Connect to database
-    public static void connect() {
+	// --- Member 4 change start ---
+    public static void connect() throws DatabaseConnectionException {
+    // --- Member 4 change end ---
         final String DB_URL = String.format("jdbc:mariadb://%s:%d/%s?user=%s&password=%s", 
                                             SERVER, PORT, DATABASE, USERNAME, PASSWORD);
         try {
@@ -25,7 +27,9 @@ public class Database_Connectivity {
             
             System.out.println("DB connection established.");
         } catch(SQLException e) {
-            System.out.println("Problem with connecting to DB: " + e.getMessage());
+        	// --- Member 4 change start ---
+            throw new DatabaseConnectionException("Problem with connecting to DB: " + e.getMessage());
+            // --- Member 4 change end ---
         }
     }
 

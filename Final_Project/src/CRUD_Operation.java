@@ -3,46 +3,51 @@ public class CRUD_Operation implements Customer_DAO {
 	// --- SEARCH ---
 	// --- READ (ONE) ---\/
 	@Override
-    public Customer searchCustomer(int Id) {
-        if (Database_Connectivity.conn == null) {
-            System.out.println("No database connection!");
-            return null; 
-        }
+	// M44 change start ---
+	// I added custom exception to handle when a customer is not found
+	public Customer searchCustomer(int Id) throws CustomerNotFoundException {
+	// --- M 4 change end ---
+	    if (Database_Connectivity.conn == null) {
+	        System.out.println("No database connection!");
+	        return null; 
+	    }
 
-        String sql = "SELECT * FROM customers WHERE id = ?";
-        Customer foundCustomer = null;
-        
-        try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
-            
-            // 1. We still use the ID to search the database
-            pstmt.setInt(1, Id); 
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) { 
-                    // 2. Extract the data we need
-                    String name = rs.getString("name");
-                    String email = rs.getString("email");
-                    String phone = rs.getString("phoneNum");
-                    
-                    String mem = rs.getString("membership");
-                    Customer.Membership membership = Customer.Membership.valueOf(mem);
-                    
-                    
-                    // 3. Make foundcustomer object in system
-                    foundCustomer = new Customer(email, name, phone, membership);
-                    
-                    // We can still print the searchId here since we passed it into the method!
-                    System.out.println("Customer ID " + ": " +"\n"+ Id+ foundCustomer.toString());
-                } else {
-                    System.out.println("No customer found with ID: " + Id);
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Problem searching for customer: " + e.getMessage());
-        }
-        
-        return foundCustomer;
-    }
+	    String sql = "SELECT * FROM customers WHERE id = ?";
+	    Customer foundCustomer = null;
+	    
+	    try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
+	        
+	        // 1. We still use the ID to search the database
+	        pstmt.setInt(1, Id); 
+	        
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            if (rs.next()) { 
+	                // 2. Extract the data we need
+	                String name = rs.getString("name");
+	                String email = rs.getString("email");
+	                String phone = rs.getString("phoneNum");
+	                
+	                String mem = rs.getString("membership");
+	                Customer.Membership membership = Customer.Membership.valueOf(mem);
+	                
+	                
+	                // 3. Make foundcustomer object in system
+	                foundCustomer = new Customer(email, name, phone, membership);
+	                
+	                // We can still print the searchId here since we passed it into the method!
+	                System.out.println("Customer ID " + ": " + "\n" + Id + foundCustomer.toString());
+	            } else {
+	                // M4 change start ---
+	                throw new CustomerNotFoundException("No customer found with ID: " + Id);
+	                // M4 change end ---
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Problem searching for customer: " + e.getMessage());
+	    }
+	    
+	    return foundCustomer;
+	}
     
     
     
@@ -118,7 +123,10 @@ public class CRUD_Operation implements Customer_DAO {
     
  // --- UPDATE ---
     @Override
-    public void updateCustomer(int targetId, Customer.Membership newMem) {
+    // M4 change start ---
+    // Added custom exception to handle when the customer to update does not exist
+    public void updateCustomer(int targetId, Customer.Membership newMem) throws CustomerNotFoundException {
+    // m4 change end ---
         if (Database_Connectivity.conn == null) {
             System.out.println("No database connection!");
             return;
@@ -128,62 +136,62 @@ public class CRUD_Operation implements Customer_DAO {
         String sql = "UPDATE customers SET membership = ? WHERE id = ?";
         
         try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
-            
-            // 2. Fill in the '?' placeholders in the exact order they appear in the string above
            
             pstmt.setString(1, newMem.name()); // Convert Enum to String
             pstmt.setInt(2, targetId);         // The 5th '?' is the ID in the WHERE clause
 
-            // 3. Execute the command
             int rowsAffected = pstmt.executeUpdate();
             
-            // 4. Check if the database actually made the change
             if (rowsAffected > 0) {
                 System.out.println("Success! Customer with ID " + targetId + " has been updated.");
             } else {
-                System.out.println("Update failed: Customer with ID " + targetId + " does not exist.");
+                // M4 change start ---
+                throw new CustomerNotFoundException("Update failed: Customer with ID " + targetId + " does not exist.");
+                // M4 change end ---
             }
         } catch (SQLException e) {
             System.out.println("Problem updating customer: " + e.getMessage());
         }
     }
     
-
+    
+    
 
     // --- DELETE ---//
     @Override
-        public void deleteCustomer(int targetId) {
-            // 1. Check if the database is actually connected
-            if (Database_Connectivity.conn == null) {
-                System.out.println("No database connection!");
-                return;
-            }
+    // M4 change start ---
+    // Added custom exception to handle when the customer to delete does not exist
+    public void deleteCustomer(int targetId) throws CustomerNotFoundException {
+    // M4 change end ---
+        // 1. Check if the database is actually connected
+        if (Database_Connectivity.conn == null) {
+            System.out.println("No database connection!");
+            return;
+        }
 
-            // 2. The SQL command. 
-         
-            String sql = "DELETE FROM customers WHERE id = ?";
-            
-            // 3. Prepare the statement to prevent SQL injection
-            try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
-                
-                // 4. Replace the '?' in the SQL string with the actual targetId
-                pstmt.setInt(1, targetId);
-
-                // 5. Execute the command and see how many rows were deleted
-                int rowsAffected = pstmt.executeUpdate();
-                
-                // 6. Show that if the customer is deleted or not
-                if (rowsAffected > 0) {
-                    System.out.println("Success! Customer with ID:  " + targetId + " has been deleted.");
-                } else {
-                    System.out.println("Delete failed: Customer with ID " + targetId + " does not exist in the database.");
-                }
-                
-            } catch (SQLException e) {
-                System.out.println("Problem deleting customer: " + e.getMessage());
-            }  
-    }
-     
+        // 2. The SQL command. 
+        String sql = "DELETE FROM customers WHERE id = ?";
         
-      
+        // 3. Prepare the statement to prevent SQL injection
+        try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
+            
+            // 4. Replace the '?' in the SQL string with the actual targetId
+            pstmt.setInt(1, targetId);
+
+            // 5. Execute the command and see how many rows were deleted
+            int rowsAffected = pstmt.executeUpdate();
+            
+            // 6. Show that if the customer is deleted or not
+            if (rowsAffected > 0) {
+                System.out.println("Success! Customer with ID:  " + targetId + " has been deleted.");
+            } else {
+                // M4 change start ---
+                throw new CustomerNotFoundException("Delete failed: Customer with ID " + targetId + " does not exist in the database.");
+                // M4 change end ---
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("Problem deleting customer: " + e.getMessage());
+        }  
+    }
 }
