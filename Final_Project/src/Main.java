@@ -2,7 +2,15 @@ import java.util.Scanner;
 
 public class Main {
 	
-
+//VALIDATION METHOD
+	public static boolean isValidPhone(String phone) {
+	    // This pattern allows:
+	    // 1234567890 (10 digits) 
+	    // OR 123-456-7890 (with hyphens)
+	    String phoneRegex = "^(\\d{10}|\\d{3}-\\d{3}-\\d{4})$";
+	    
+	    return phone.matches(phoneRegex);
+	}
 	  
 	// --- Helper Method to Validate Email Format ---
     public static boolean isValidEmail(String email) {
@@ -43,8 +51,12 @@ public class Main {
     	}
     	// M4 change end ---
     	
-
     	
+    	
+    	
+    	
+
+   //VALIDATION METHOD
     
 
         Scanner sc = new Scanner(System.in);
@@ -93,6 +105,13 @@ public class Main {
                 
                 System.out.print("Phone: ");
                 String phone = sc.nextLine();
+                if (!isValidPhone(phone)) {
+                	 System.out.println("ERROR: Invalid phone number. (e.g.,012-345-6789)");
+                     System.out.println("Returning to main menu...");
+                     
+                     break;
+                }
+                	
                 
                 System.out.print("Membership (NONE, BASIC, PREMIUM): ");
                 String mem = sc.nextLine().toUpperCase();
