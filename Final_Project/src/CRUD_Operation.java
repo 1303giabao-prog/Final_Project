@@ -1,8 +1,9 @@
 import java.sql.*;
-public class CRUD_Operation {
+public class CRUD_Operation implements Customer_DAO {
 	// --- SEARCH ---
-	// --- READ (ONE) ---
-    public static Customer searchCustomer(int Id) {
+	// --- READ (ONE) ---\/
+	@Override
+    public Customer searchCustomer(int Id) {
         if (Database_Connectivity.conn == null) {
             System.out.println("No database connection!");
             return null; 
@@ -31,7 +32,7 @@ public class CRUD_Operation {
                     foundCustomer = new Customer(email, name, phone, membership);
                     
                     // We can still print the searchId here since we passed it into the method!
-                    System.out.println("Found Customer ID " + Id + ": " + foundCustomer.toString());
+                    System.out.println("Customer ID " + ": " +"\n"+ Id+ foundCustomer.toString());
                 } else {
                     System.out.println("No customer found with ID: " + Id);
                 }
@@ -45,8 +46,9 @@ public class CRUD_Operation {
     
     
     
-	// --- CREATE ---
-    public static void addCustomer(String name, String email, String phoneNum, Customer.Membership membership) {
+	// --- CREATE ---//
+    @Override
+    public void addCustomer(String name, String email, String phoneNum, Customer.Membership membership) {
         // 1. Check if the database connection is active
         if (Database_Connectivity.conn == null) {
             System.out.println("No database connection!");
@@ -77,7 +79,8 @@ public class CRUD_Operation {
         }
     }
  // --- READ (ALL) ---
-    public static void displayAllcustomers() {
+    @Override
+    public void displayAllcustomers() {
         if (Database_Connectivity.conn == null) {
             System.out.println("No database connection!");
             return;
@@ -114,7 +117,8 @@ public class CRUD_Operation {
     
     
  // --- UPDATE ---
-    public static void updateCustomer(int targetId, Customer.Membership newMem) {
+    @Override
+    public void updateCustomer(int targetId, Customer.Membership newMem) {
         if (Database_Connectivity.conn == null) {
             System.out.println("No database connection!");
             return;
@@ -146,8 +150,9 @@ public class CRUD_Operation {
     
 
 
-    // --- DELETE ---
-        public static void deleteCustomer(int targetId) {
+    // --- DELETE ---//
+    @Override
+        public void deleteCustomer(int targetId) {
             // 1. Check if the database is actually connected
             if (Database_Connectivity.conn == null) {
                 System.out.println("No database connection!");

@@ -1,49 +1,20 @@
-public class Customer {
+public class Customer extends Person {
 
     // Enum for membership types
     public enum Membership {
         NONE, BASIC, PREMIUM
     }
 
-    private String email;
-    private String name;
-    private String phoneNum;
     private Membership membership;
 
     // Constructor
     public Customer(String email, String name, String phoneNum, Membership membership) {
-        this.email = email;
-        this.name= name;
-        this.phoneNum = phoneNum;
+        // 'super' passes the data up to the parent Person class
+        super(name, email, phoneNum); 
         this.membership = membership;
     }
 
-    // Getters and Setters
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-   
-    public String getPhoneNum() {
-        return phoneNum;
-    }
-
-    public void setPhoneNum(String phoneNum) {
-        this.phoneNum = phoneNum;
-    }
-
+    // Getters and Setters for the specific Customer traits
     public Membership getMembership() {
         return membership;
     }
@@ -55,11 +26,11 @@ public class Customer {
     // toString method
     @Override
     public String toString() {
-        return "Customer{" +
-                "email='" + email + '\'' +
-                ", name='" + name + '\'' +
-                ", phoneNum='" + phoneNum + '\'' +
-                ", membership=" + membership +
-                '}';
+        // We use \n to move the text to the next line for a cleaner look
+        return "Customer's information\n" +
+               "email: " + getEmail() + "\n" +
+               "name: " + getName() + "\n" +
+               "phoneNum: " + getPhoneNum() + "\n" +
+               "membership: " + membership;
     }
 }

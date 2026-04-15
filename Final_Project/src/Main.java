@@ -1,6 +1,8 @@
 import java.util.Scanner;
 
 public class Main {
+	
+
 	  
 	// --- Helper Method to Validate Email Format ---
     public static boolean isValidEmail(String email) {
@@ -12,6 +14,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
+    	Customer_DAO db = new CRUD_Operation();
     	Database_Connectivity.connect();
     	
 
@@ -57,10 +60,16 @@ public class Main {
                 
                 System.out.print("Membership (NONE, BASIC, PREMIUM): ");
                 String mem = sc.nextLine().toUpperCase();
-                Customer.Membership membership = Customer.Membership.valueOf(mem);
+                Customer.Membership membership;
+                try {
+                    membership = Customer.Membership.valueOf(mem);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Invalid membership entered. Defaulting to NONE.");
+                    membership = Customer.Membership.NONE;
+                }
                 
                 // 4. Finally, it implements the code to save to the database
-                CRUD_Operation.addCustomer(name, email, phone, membership);
+                db.addCustomer(name, email, phone, membership);
                 break;
                  
 
@@ -74,7 +83,7 @@ public class Main {
                     sc.nextLine(); 
                     
                     // 2. Send the ID to your CRUD class to find the customer!
-                    CRUD_Operation.searchCustomer(searchId);
+                    db.searchCustomer(searchId);
          
                  
                     break;
@@ -84,18 +93,30 @@ public class Main {
                     int id = sc.nextInt();
                     sc.nextLine();
                  
-                   CRUD_Operation.deleteCustomer(id);
+                   db.deleteCustomer(id);
                    break;
-
+                   // UPDATE membership status
                 case 4:
                 	System.out.print("Customer ID: ");
                 	int sid = sc.nextInt();
-                 
+                	// Show customer's information to check memebership status
+                	
+                	System.out.println("Customer's information");
+                	db.searchCustomer(sid);
                     sc.nextLine();
-                    System.out.println(" membership status:");
-                    String memStatus= sc.nextLine();
-                    Customer.Membership Membership = Customer.Membership.valueOf(memStatus);
-                    CRUD_Operation.updateCustomer(sid, Membership);
+                    
+                    
+                    
+                    System.out.println("Update membership status:");
+                    String memStatus= sc.nextLine().toUpperCase();
+                    Customer.Membership newMembership;
+                    try {
+                        newMembership = Customer.Membership.valueOf(memStatus);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid membership entered. Update cancelled.");
+                        break; // Exit the switch statement early
+                    }
+                    db.updateCustomer(sid, newMembership);
             
                
                     
@@ -106,7 +127,7 @@ public class Main {
                     break;
                 case 5:
                 	System.out.print("----ALL CUSTOMERS----");
-                	CRUD_Operation.displayAllcustomers();
+                	db.displayAllcustomers();
                 	
                 	break;
             }
