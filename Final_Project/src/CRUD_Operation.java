@@ -35,7 +35,7 @@ public class CRUD_Operation implements Customer_DAO {
 	                foundCustomer = new Customer(email, name, phone, membership);
 	                
 	                // We can still print the searchId here since we passed it into the method!
-	                System.out.println("Customer ID " + ": " + "\n" + Id + foundCustomer.toString());
+	                System.out.println( foundCustomer.toString());
 	            } else {
 	                // M4 change start ---
 	                throw new CustomerNotFoundException("No customer found with ID: " + Id);

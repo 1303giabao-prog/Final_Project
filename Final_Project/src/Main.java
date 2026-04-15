@@ -116,47 +116,57 @@ public class Main {
                     sc.nextLine(); 
                     
                     // 2. Send the ID to your CRUD class to find the customer!
-                    db.searchCustomer(searchId);
-         
-                 
+                    try {
+                    	db.searchCustomer(searchId); //check if the customer exist.
+                    }catch (CustomerNotFoundException e) {
+                		System.out.println("Customer Error: " + e.getMessage()); 
+                	}
                     break;
 
                 case 3:
                     System.out.print("Customer ID: ");
                     int id = sc.nextInt();
                     sc.nextLine();
-                 
-                   db.deleteCustomer(id);
+                    //Check customer information before delete
+                    db.searchCustomer(id);
+                 //Check if the customer exists
+                   try{
+                	   db.deleteCustomer(id);
+                   }catch (CustomerNotFoundException e) {
+               		System.out.println("Customer Error: " + e.getMessage());
+               	}
                    break;
                    // UPDATE membership status
                 case 4:
-                	System.out.print("Customer ID: ");
-                	int sid = sc.nextInt();
-                	//  M4 change start ---
-                	sc.nextLine();
-                	// M4 change end ---
-                	// Show customer's information to check memebership status
-                	
-                	System.out.println("Customer's information");
-                	db.searchCustomer(sid);
-                    
-                    
-                    
-                    System.out.println("Update membership status:");
-                    String memStatus= sc.nextLine().toUpperCase();
-                    
-                    // M4 change start ---
-                    Customer.Membership newMembership = validateMembershipInput(memStatus);
-                 // M4 change end ---
-                    
-                    db.updateCustomer(sid, newMembership);
-            
-               
-                    
-                    
-                  
-                    
-                 
+                    System.out.print("Customer ID: ");
+                    int sid = sc.nextInt();
+                    sc.nextLine(); // Clear buffer
+
+                    // 1. Capture the customer object so we can see their CURRENT status
+                    Customer currentCustomer = db.searchCustomer(sid);
+
+                    if (currentCustomer != null) {
+                        System.out.println("Update membership status (NONE, BASIC, PREMIUM):");
+                        String memStatus = sc.nextLine().toUpperCase();
+
+                        try {
+                            // 2. Validate the string input into an Enum
+                            Customer.Membership newMembership = validateMembershipInput(memStatus);
+
+                            // 3. Check if the new status is the same as the current one
+                            if (currentCustomer.getMembership() == newMembership) {
+                                // Manually throw your custom exception if nothing is actually changing
+                                throw new InvalidMembershipException("Error: Customer is already a " + newMembership + " member.");
+                            }
+
+                            // 4. Only update if the status is actually different
+                            db.updateCustomer(sid, newMembership);
+
+                        } catch (InvalidMembershipException e) {
+                            // This will be caught by your catch block at the bottom of the switch!
+                            System.out.println("Membership Error: " + e.getMessage());
+                        }
+                    }
                     break;
                 case 5:
                 	System.out.print("----ALL CUSTOMERS----");
