@@ -134,27 +134,36 @@ public class Main {
                     // Clear the scanner buffer (always good practice after grabbing an int)
                     sc.nextLine(); 
                     
-                    // 2. Send the ID to your CRUD class to find the customer!
-                    try {
-                    	db.searchCustomer(searchId); //check if the customer exist.
-                    }catch (CustomerNotFoundException e) {
-                		System.out.println("Customer Error: " + e.getMessage()); 
-                	}
-                    break;
+                  
+                   	db.searchCustomer(searchId); 
+                    
 
                 case 3:
-                    System.out.print("Customer ID: ");
-                    int id = sc.nextInt();
-                    sc.nextLine();
-                    //Check customer information before delete
-                    db.searchCustomer(id);
-                 //Check if the customer exists
-                   try{
-                	   db.deleteCustomer(id);
-                   }catch (CustomerNotFoundException e) {
-               		System.out.println("Customer Error: " + e.getMessage());
-               	}
-                   break;
+                	System.out.print("Enter Customer ID to Delete: ");
+                	int id = sc.nextInt();
+                	sc.nextLine(); // Clear the buffer
+
+                	// 1. Capture the customer so we can check if they exist
+                	Customer found = db.searchCustomer(id);
+
+                	// 2. Only ask for confirmation if the customer was actually found
+                	if (found != null) {
+                	    System.out.print("\n Are you sure you want to delete this customer? (yes/no): ");
+                	    String confirm = sc.nextLine().toLowerCase();
+
+                	    if (confirm.equals("yes")) {
+                	        db.deleteCustomer(id); 
+                	      
+                	    } else {
+                	        System.out.println("Operation cancelled. Returning to main menu...");
+                	    }
+                	} else {
+                	    // If searchCustomer returned null, it already printed "Not Found", 
+                	    // so we just jump back to the menu.
+                	}
+                	break; // Exit the case
+                	   
+                  
                    // UPDATE membership status
                 case 4:
                     System.out.print("Customer ID: ");
