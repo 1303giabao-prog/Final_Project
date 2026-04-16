@@ -71,10 +71,9 @@ public class Main {
         	// M4 change end ---
             System.out.println("\n---  Management System ---");
             System.out.println("1. Add customer");
-            System.out.println("2. Search customer");
-            System.out.println("3. Delete customer");
-            System.out.println("4. Update customer's information");
-            System.out.println("5. View all the customers");
+            System.out.println("2. Delete customer");
+            System.out.println("3. Update customer's information");
+            System.out.println("4. View all the customers");
             System.out.println("0. Exit");
             System.out.print("Enter choice: ");
             choice = sc.nextInt();
@@ -125,20 +124,10 @@ public class Main {
                 break;
                  
 
-                case 2:
-                	System.out.print("Enter Customer ID to search: ");
-                    
-                    // 1. Grab the ID the user typed
-                    int searchId = sc.nextInt(); 
-                    
-                    // Clear the scanner buffer (always good practice after grabbing an int)
-                    sc.nextLine(); 
-                    
-                  
-                   	db.searchCustomer(searchId); 
+              
                     
 
-                case 3:
+                case 2:
                 	System.out.print("Enter Customer ID to Delete: ");
                 	int id = sc.nextInt();
                 	sc.nextLine(); // Clear the buffer
@@ -165,7 +154,7 @@ public class Main {
                 	   
                   
                    // UPDATE membership status
-                case 4:
+                case 3:
                     System.out.print("Customer ID: ");
                     int sid = sc.nextInt();
                     sc.nextLine(); // Clear buffer
@@ -196,7 +185,7 @@ public class Main {
                         }
                     }
                     break;
-                case 5:
+                case 4:
                 	System.out.print("----ALL CUSTOMERS----");
                 	db.displayAllcustomers();
                 	
