@@ -5,7 +5,7 @@ public class Database_Connectivity {
 	
 	 // Global connection variable
     static Connection conn = null;
-    static Statement statement = null;
+
    
     // Database credentials.
     private static final String SERVER = "localhost";
