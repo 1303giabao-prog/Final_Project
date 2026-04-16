@@ -86,6 +86,8 @@ public class Main {
 
             switch (choice) {
             case 1:
+                System.out.print("Name: ");
+                String name = sc.nextLine();
                 System.out.print("Email: ");
                 String email = sc.nextLine().toLowerCase();
                 
@@ -100,8 +102,7 @@ public class Main {
                 }
                 
                 // 3. If the email WAS good, it ignores the 'if' block and keeps asking questions
-                System.out.print("Name: ");
-                String name = sc.nextLine();
+              
                 
                 System.out.print("Phone: ");
                 String phone = sc.nextLine();

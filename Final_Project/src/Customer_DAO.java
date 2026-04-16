@@ -6,5 +6,6 @@ public interface Customer_DAO {
     void displayAllcustomers(); 
     void updateCustomer(int targetId, Customer.Membership newMem) throws CustomerNotFoundException;
     void deleteCustomer(int targetId) throws CustomerNotFoundException;
+   
 }
 //M4 J change end ---
