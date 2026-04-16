@@ -13,13 +13,13 @@ public class Main {
 	}
 	  
 	// --- Helper Method to Validate Email Format ---
-    public static boolean isValidEmail(String email) {
-        // This pattern forces the format: [characters] @ [characters] . [characters]
-        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-z]+$";
-        
-        // .matches() returns true if the email perfectly fits the regex pattern
-        return email.matches(emailRegex);
-    }
+	public static boolean isValidEmail(String email) {
+	    // This pattern forces the format: [anything] @ gmail . com
+	    // The \\. is used because a single dot in regex means "any character"
+	    String emailRegex = "^[A-Za-z0-9+_.-]+@gmail\\.com$";
+	    
+	    return email.matches(emailRegex.toLowerCase());
+	}
 
     // M4 change start ---
     // Helper method to validate menu choice
@@ -91,7 +91,7 @@ public class Main {
                 System.out.print("Email: ");
                 String email = sc.nextLine().toLowerCase();
                 
-                // 1. Check if the email is bad
+                // Check If the email WAS good. If good, continue.
                 if (!isValidEmail(email)) {
                     System.out.println("ERROR: Invalid email format. (e.g., name@gmail.com)");
                     System.out.println("Returning to main menu...");
@@ -100,11 +100,10 @@ public class Main {
                     // It skips all the code below and restarts your main menu!
                     break; 
                 }
-                
-                // 3. If the email WAS good, it ignores the 'if' block and keeps asking questions
+           
               
-                
-                System.out.print("Phone: ");
+                //Check if phone number is valid, if it is, continue.
+                System.out.print("Phone number: ");
                 String phone = sc.nextLine();
                 if (!isValidPhone(phone)) {
                 	 System.out.println("ERROR: Invalid phone number. (e.g.,012-345-6789)");
