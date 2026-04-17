@@ -195,4 +195,117 @@ public class CRUD_Operation implements Customer_DAO {
             System.out.println("Problem deleting customer: " + e.getMessage());
         }  
     }
+
+
+
+	@Override
+	public void showAllCourses() {
+	      if (Database_Connectivity.conn == null) {
+	            System.out.println("No database connection!");
+	            return;
+	        }
+
+	        // 1. Simple SQL command to get everything
+	        String sql = "SELECT courses.courseName AS Courses, staff.name AS Trainers, courses.session, courses.cost AS Price\r\n"
+	        		+ "FROM courses\r\n"
+	        		+ "INNER JOIN staff \r\n"
+	        		+ "ON courses.trainer_id = staff.id;";
+	        
+	        // 2. Create a Statement and a ResultSet to hold the downloaded data
+	        try (Statement stmt = Database_Connectivity.conn.createStatement();
+	             ResultSet rs = stmt.executeQuery(sql)) {
+	            
+	            System.out.println("\n--- Gym Course List ---");
+	            
+	            // 3. Loop through every row the database returned
+	            while (rs.next()) {
+	                // Extract the data from the current row
+	               
+	                String name = rs.getString("Courses");
+	                String trainersName = rs.getString("Trainers");
+	                String session = rs.getString("session");
+	                String cost = rs.getString("price");
+	             
+	                
+	                // Print it out neatly
+	             // Corrected labels and 4 placeholders for 4 variables
+	                System.out.printf("Course: %-20s | Trainer: %-20s | Session: %-10s | Price: %s\n", 
+	                                   name, trainersName, session, cost);
+	            }
+	            System.out.println("-------------------------");
+	            
+	        } catch (SQLException e) {
+	            System.out.println("Problem reading courses: " + e.getMessage());
+	        }
+	
+		
+	}
+
+
+
+	@Override
+	public void showAllTrainers() {
+	     if (Database_Connectivity.conn == null) {
+	            System.out.println("No database connection!");
+	            return;
+	        }
+
+	        // 1. Simple SQL command to get everything
+	        String sql = "SELECT * FROM staff";
+	        
+	        // 2. Create a Statement and a ResultSet to hold the downloaded data
+	        try (Statement stmt = Database_Connectivity.conn.createStatement();
+	             ResultSet rs = stmt.executeQuery(sql)) {
+	            
+	            System.out.println("\n--- Gym Trainers List ---");
+	            
+	            // 3. Loop through every row the database returned
+	            while (rs.next()) {
+	                // Extract the data from the current row
+	            	int id = rs.getInt("id");
+	                String name = rs.getString("name");
+	                String email = rs.getString("email");
+	                String phone = rs.getString("phoneNum");
+	                String certi = rs.getString("certificate");
+	                String exp = rs.getString("yearsOfExperience");
+	                String workoutExp = rs.getString("yearsOfWorkingOut");
+	                String achievement = rs.getString("achievement");
+	             
+	                
+	                // Print it out neatly
+	             // Corrected labels and 4 placeholders for 4 variables
+	                System.out.printf("%-3d | %-15s | %-28s| %-15s | %-30s | %-15s | %-15s\n", 
+                            id, name, email, phone,certi, exp, workoutExp, achievement);
+	            }
+	            System.out.println("-------------------------");
+	            
+	        } catch (SQLException e) {
+	            System.out.println("Problem reading Staffs: " + e.getMessage());
+	        }
+	
+		
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

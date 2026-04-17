@@ -24,7 +24,7 @@ public class Main {
     // M4 change start ---
     // Helper method to validate menu choice
     public static void validateMenuChoice(int choice) throws InvalidMenuChoiceException {
-        if (choice < 0 || choice > 5) {
+        if (choice < 0 || choice > 8) {
             throw new InvalidMenuChoiceException("Please choose a valid menu option from 0 to 5");
         }
     }
@@ -41,7 +41,8 @@ public class Main {
 
     public static void main(String[] args) {
     	Customer_DAO db = new CRUD_Operation();
-    	
+    	Customer_DAO db1 = new CRUD_Operation();
+    	Customer_DAO db2 = new CRUD_Operation();
     	// M4 change start ---
     	try {
     		Database_Connectivity.connect();
@@ -74,6 +75,8 @@ public class Main {
             System.out.println("2. Delete customer");
             System.out.println("3. Update customer's information");
             System.out.println("4. View all the customers");
+            System.out.println("5. View all the courses");
+            System.out.println("6. View all the personal trainers");
             System.out.println("0. Exit");
             System.out.print("Enter choice: ");
             choice = sc.nextInt();
@@ -190,7 +193,14 @@ public class Main {
                 	db.displayAllcustomers();
                 	
                 	break;
+                case 5:
+                	db.showAllCourses();
+                	break;
+                case 6:
+                	db2.showAllTrainers();
+                	break;
             }
+           
             
             // M4 change start ---
         	} catch (InvalidMenuChoiceException e) {
