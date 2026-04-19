@@ -1,19 +1,33 @@
 
+
 public class Course {
+	public enum courseStatus {
+	   FULL,
+	   AVAILABLE
+	}
+	private int id;
     private String courseName;
     private int session;      // Number of sessions (e.g., 10 sessions)
     private double cost;      // Cost of the course
     private String ptName;    // The Personal Trainer's name
+    private courseStatus status;
+   
 
     // Constructor
-    public Course(String courseName, int session, double cost, String ptName) {
+    public Course(int id, String courseName, int session, double cost, String ptName, courseStatus status) {
+    	this.id = id;
         this.courseName = courseName;
         this.session = session;
         this.cost = cost;
         this.ptName = ptName;
+        this.status = status;
     }
 
     // Getters and Setters
+    public int getId() {    return id; }
+
+ 
+    public void setId(int id) {  this.id = id;}
     public String getCourseName() { return courseName; }
     public void setCourseName(String courseName) { this.courseName = courseName; }
 
@@ -25,6 +39,9 @@ public class Course {
 
     public String getPtName() { return ptName; }
     public void setPtName(String ptName) { this.ptName = ptName; }
+    public courseStatus getStatus() {return status; }
+
+    public void setStatus(courseStatus status) { this.status = status; }
 
     // Display Course Details
     @Override

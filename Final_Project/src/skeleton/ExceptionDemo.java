@@ -3,6 +3,7 @@ package skeleton;
 import exceptions.DatabaseConnectionException;
 import exceptions.InvalidMembershipException;
 import exceptions.InvalidMenuChoiceException;
+import exceptions.InvalidStatusException;
 import exceptions.MemberNotFoundException;
 
 public class ExceptionDemo {
@@ -20,6 +21,11 @@ public class ExceptionDemo {
 			guide.validateMembership("GoldPlus");
 		} catch (InvalidMembershipException e) {
 			System.out.println("Membership Error: " + e.getMessage());
+		}
+		try {
+			guide.validateStatus("pending");
+		} catch (InvalidStatusException e) {
+			System.out.println("Status Error: " + e.getMessage());
 		}
 
 		try {

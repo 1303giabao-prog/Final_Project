@@ -1,4 +1,9 @@
 import java.sql.*;
+
+
+import exceptions.CourseNotFoundException;
+
+
 public class CRUD_Operation implements Customer_DAO {
 	
 	// --- SEARCH ---
@@ -49,8 +54,131 @@ public class CRUD_Operation implements Customer_DAO {
 	    
 	    return foundCustomer;
 	}
-    
-    
+	
+	// SEARCH FOR REGISTRATION IN REGIS LIST
+	@Override
+	public Registration searchRegistration(String name) throws CustomerNotFoundException {
+		// TODO Auto-generated method stub
+	    if (Database_Connectivity.conn == null) {
+	        System.out.println("No database connection!");
+	        return null; 
+	    }
+
+	   
+	    String sql = "SELECT * FROM registrations WHERE name = ?"; //use name to find customers
+	    Registration foundReg = null;
+	    
+	    try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
+	        
+	        pstmt.setString(1, name); 
+	        
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            if (rs.next()) { 
+	                
+	            	//Extract the data we need
+	                String name1 = rs.getString("name");
+	                String email = rs.getString("email");
+	                String phone = rs.getString("phoneNum");
+	                int courseId = rs.getInt("course_id");
+	                String sta = rs.getString("status");
+	               Registration.Status regstatus =  Registration.Status.valueOf(sta);
+
+	          
+	                foundReg = new Registration( name1, email, phone, regstatus, courseId);
+	                
+	                System.out.println("Customer found: " + foundReg.toString());
+	            } else {
+	                // Throw exception If name not found
+	                throw new CustomerNotFoundException("No registration found with " + name);
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Problem searching for registration: " + e.getMessage());
+	    }
+	    
+	    return foundReg;
+	}
+	
+
+//SEARCG FOR COURSE  IN COURSES LIST
+	public Course searchCourse(int Id) throws CourseNotFoundException  {
+	    // 1. Check if the database connection is established
+	    if (Database_Connectivity.conn == null) {
+	        System.out.println("No database connection!");
+	        return null;
+	    }
+
+	    // 2. Define the SQL query using a '?' as a placeholder for security (prevents SQL Injection)
+	    String sql = "SELECT c.*, s.name AS ptName \r\n"
+	    		+ "FROM courses c \r\n"
+	    		+ "JOIN staff s ON c.trainer_id = s.id \r\n"
+	    		+ "WHERE c.id = ?";
+	    Course foundCourse = null;
+	    
+	    // 3. Use try-with-resources to ensure the PreparedStatement is closed automatically
+	    try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
+	        
+	        // 4. Bind the integer ID to the first '?' in the SQL query
+	        pstmt.setInt(1, Id); 
+	        
+	        // 5. Execute the query and store results in a ResultSet
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            // Check if at least one row was returned
+	            if (rs.next()) { 
+	                
+	                // 6. Extract data from the current row using column names from your database schema
+	                int id = rs.getInt("id");
+	                String courseName = rs.getString("courseName");
+	                int session = rs.getInt("session");
+	                
+	                // Use getDouble for DECIMAL types in SQL
+	                double cost = rs.getDouble("cost"); 
+	               
+	              
+	                // 7. Handle the new 'status' attribute
+	                // Retrieve the string value ('FULL' or 'NOT FULL')
+	                String statusStr = rs.getString("status");
+	                
+	                // Convert the String from the DB into your Java Enum. 
+	           
+	                Course.courseStatus courseStatus = Course.courseStatus.valueOf(statusStr.replace(" ", "_").toUpperCase());
+	                String ptName = rs.getString("ptName");
+
+	                // 8. Create a new Course object using the retrieved data
+	                foundCourse = new Course( id, courseName, session,cost, ptName, courseStatus);
+	                
+	                System.out.println(foundCourse.toString());
+	                
+	            } else {
+	                // 9. If rs.next() is false, the ID does not exist in the database
+	                throw new CourseNotFoundException("No course found with ID: " + Id);
+	            }
+	        }
+	    } catch (SQLException e) {
+	        // Handle database-related errors (syntax, connection drops, etc.)
+	        System.out.println("Problem searching for course: " + e.getMessage());
+	    }
+	    
+	    return foundCourse;
+	}
+	
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
     
 	// --- CREATE ---//
     @Override
@@ -84,6 +212,52 @@ public class CRUD_Operation implements Customer_DAO {
             System.out.println("Problem adding customer: " + e.getMessage());
         }
     }
+    
+    
+    
+	@Override
+	public void addRegistration(String name, String email, String phoneNum, int CourseId, Registration.Status status) {
+		   // 1. Check if the database connection is active
+        if (Database_Connectivity.conn == null) {
+            System.out.println("No database connection!");
+            return;
+        }
+
+        // 2. Write the SQL statement. The '?' are placeholders for our variables.
+        String sql = "INSERT INTO registrations (name, email, phoneNum, course_id,  status) VALUES (?, ?, ?, ?, ?)";
+        
+        // 3. Use try-with-resources to automatically close the PreparedStatement when done
+        try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
+            
+            // 4. Fill in the '?' placeholders with our actual data
+            pstmt.setString(1, name);
+            pstmt.setString(2, email);
+            pstmt.setString(3, phoneNum);
+            // Convert the enum to a String (e.g., "FREEZE") so the database can store it
+            pstmt.setInt(4, CourseId);
+            pstmt.setString(5, status.name()); 
+           
+            
+
+            // 5. Execute the command
+            int rowsAffected = pstmt.executeUpdate();
+            
+            if (rowsAffected > 0) {
+                System.out.println("Success! '" + name + "' has been added ");
+            }
+        } catch (SQLException e) {
+            System.out.println("Problem adding customer: " + e.getMessage());
+        }
+		
+	
+		
+	}
+
+    
+    
+    
+    
+    
  // --- READ (ALL) ---
     @Override
     public void displayAllcustomers() {
@@ -92,34 +266,157 @@ public class CRUD_Operation implements Customer_DAO {
             return;
         }
 
-        // 1. Simple SQL command to get everything
         String sql = "SELECT * FROM customers";
         
-        // 2. Create a Statement and a ResultSet to hold the downloaded data
         try (Statement stmt = Database_Connectivity.conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             
-            System.out.println("\n--- Gym Customer List ---");
+            System.out.println("\n================================= GYM CUSTOMER LIST =================================");
+            // Header for the table
+            System.out.printf("%-4s | %-18s | %-12s | %-12s | %-25s\n", 
+                              "ID", "NAME", "PHONE", "TIER", "EMAIL");
+            System.out.println("-------------------------------------------------------------------------------------");
             
-            // 3. Loop through every row the database returned
             while (rs.next()) {
-                // Extract the data from the current row
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String email = rs.getString("email");
                 String phone = rs.getString("phoneNum");
                 String mem = rs.getString("membership");
                 
-                // Print it out neatly
-                System.out.printf("ID: %-3d | Name: %-15s | Phone: %-12s | Tier: %-8s | Email: %s\n", 
-                                  id, name, phone, mem, email);
+                // Print using matching alignment widths
+                System.out.printf("%-4d | %-18s | %-12s | %-12s | %-25s\n", 
+                                   id, name, phone, mem, email);
             }
-            System.out.println("-------------------------");
+            System.out.println("=====================================================================================");
             
         } catch (SQLException e) {
             System.out.println("Problem reading customers: " + e.getMessage());
         }
     }
+    
+    
+    @Override
+    public void showAllCourses() {
+        if (Database_Connectivity.conn == null) {
+            System.out.println("No database connection!");
+            return;
+        }
+
+        // 1. Added 'c.status' to the SELECT statement
+        String sql = "SELECT c.id, c.courseName, s.name AS trainerName, c.session, c.cost, c.status " +
+                     "FROM courses c " +
+                     "INNER JOIN staff s ON c.trainer_id = s.id";
+        
+        try (Statement stmt = Database_Connectivity.conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            System.out.println("\n==================================== GYM COURSE LIST ====================================");
+            // 2. Updated header to include "STATUS" and adjusted column widths
+            System.out.printf("%-4s | %-20s | %-18s | %-10s | %-10s | %-10s\n", 
+                              "ID", "COURSE NAME", "TRAINER", "SESSIONS", "PRICE", "STATUS");
+            System.out.println("-----------------------------------------------------------------------------------------");
+            
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("courseName");
+                String trainer = rs.getString("trainerName");
+                int sessions = rs.getInt("session");
+                double cost = rs.getDouble("cost");
+                // 3. Extract the status string from the ResultSet
+                String status = rs.getString("status");
+                
+                // 4. Added %-10s at the end to display the status column
+                System.out.printf("%-4d | %-20s | %-18s | %-10d | $%-9.2f | %-10s\n", 
+                                   id, name, trainer, sessions, cost, status);
+            }
+            System.out.println("=========================================================================================");
+            
+        } catch (SQLException e) {
+            System.out.println("Problem reading courses: " + e.getMessage());
+        }
+    }
+
+
+
+    @Override
+    public void showAllTrainers() {
+        if (Database_Connectivity.conn == null) {
+            System.out.println("No database connection!");
+            return;
+        }
+
+        String sql = "SELECT * FROM staff";
+        
+        try (Statement stmt = Database_Connectivity.conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            // formatting to make the output look organized
+            System.out.println("\n================================================= GYM TRAINER LIST ================================================");
+            System.out.printf("%-3s | %-15s | %-25s | %-15s | %-30s | %-5s\n", 
+                              "ID", "NAME", "EMAIL", "PHONE", "CERTIFICATE", "EXP");
+            System.out.println("-------------------------------------------------------------------------------------------------------------------");
+            
+            // extract the data in order from mariaDB
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                String phone = rs.getString("phoneNum");
+                String certi = rs.getString("certificate");
+                int exp = rs.getInt("yearsOfExperience");
+                
+                // Achievement is often long, so we print it on a new sub-line or keep it compact
+                System.out.printf("%-3d | %-15s | %-25s | %-15s | %-30s | %-5d years\n", 
+                                   id, name, email, phone, certi, exp);
+            }
+            System.out.println("===================================================================================================================");
+            
+        } catch (SQLException e) {
+            System.out.println("Problem reading Staff: " + e.getMessage());
+        }
+    }
+
+
+
+	@Override
+	public void showAllRegistrations() {
+	    if (Database_Connectivity.conn == null) {
+	        System.out.println("No database connection!");
+	        return;
+	    }
+
+	    // Using the JOIN query
+	    String sql = "SELECT r.name, r.email, r.phoneNum, r.status, c.courseName " +
+	                 "FROM registrations r " +
+	                 "INNER JOIN courses c ON c.id = r.course_id";
+	    
+	    try (Statement stmt = Database_Connectivity.conn.createStatement();
+	         ResultSet rs = stmt.executeQuery(sql)) {
+	        
+	        System.out.println("\n=========================== GYM REGISTRATIONS LIST ===========================");
+	        // Header for the table
+	        System.out.printf("%-18s | %-12s | %-20s | %-20s | %-15s\n", 
+	                          "NAME", "PHONE", "EMAIL", "COURSE", "STATUS");
+	        System.out.println("------------------------------------------------------------------------------");
+	        
+	        while (rs.next()) {
+	            // Extracting data using column names from the SQL query
+	            String name = rs.getString("name");
+	            String email = rs.getString("email");
+	            String phone = rs.getString("phoneNum");
+	            String status = rs.getString("status");
+	            String course = rs.getString("courseName");
+	            
+	            // Place the output neatly
+	            System.out.printf("%-18s | %-12s | %-20s | %-20s | %-15s\n", 
+	                               name, phone, email, course, status);
+	        }
+	        System.out.println("==============================================================================");
+	        
+	    } catch (SQLException e) {
+	        System.out.println("Error displaying registrations: " + e.getMessage());
+	    }
+	}
     
     
  // --- UPDATE ---
@@ -157,6 +454,76 @@ public class CRUD_Operation implements Customer_DAO {
     
     
     
+    //	UPDATE REGISTRATION'STATUS BY NAME
+	@Override
+	public void updateRegistration(Registration.Status newcourseStatus, String name) throws CustomerNotFoundException {
+		// TODO Auto-generated method stub
+		if (Database_Connectivity.conn == null) {
+            System.out.println("No database connection!");
+            return;
+        }
+
+        // 1. The UPDATE command targets the specific columns, and the WHERE clause protects the rest of the table
+        String sql = "UPDATE registrations SET status = ? WHERE name LIKE ?";
+        
+        try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
+           
+        	pstmt.setString(1, newcourseStatus.name().replace("_", " ")); // Convert Enum to String
+            pstmt.setString(2, name);         // The 5th '?' is the ID in the WHERE clause
+
+            int rowsAffected = pstmt.executeUpdate();
+            // check if there is a change, if no, then throws errors
+            if (rowsAffected > 0) {
+                System.out.println("Success! status has been updated.");
+            } else {
+                
+                throw new CustomerNotFoundException("Update failed: Status with " + name + " does not exist.");
+               
+            }
+        } catch (SQLException e) {
+            System.out.println("Problem updating customer: " + e.getMessage());
+        }
+		
+		
+	}
+    
+	
+	//  UPDATE COURSES'S STATUS ( FULL OR NOT FULL )//UPDATE courses SET status = ? WHERE id = ?";
+    
+	
+	@Override
+	public void updateCoursesStatus(Course.courseStatus newcourseStatus, int courseId) throws CourseNotFoundException {
+		if (Database_Connectivity.conn == null) {
+            System.out.println("No database connection!");
+            return;
+        }
+
+        // 1. The UPDATE command targets the specific columns, and the WHERE clause protects the rest of the table
+        String sql = "UPDATE courses SET status = ? WHERE id = ?";
+        
+        try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
+           
+            pstmt.setString(1, newcourseStatus.name()); // Convert Enum to String
+            pstmt.setInt(2,  courseId);         // The 5th '?' is the ID in the WHERE clause
+
+            int rowsAffected = pstmt.executeUpdate();
+            // check if there is a change, if no, then throws errors
+            if (rowsAffected > 0) {
+                System.out.println("Success! status has been updated.");
+            } else {
+                
+                throw new CourseNotFoundException("Update failed: course does not exist.");
+               
+            }
+        } catch (SQLException e) {
+            System.out.println("Problem updating customer: " + e.getMessage());
+        }
+	
+	
+	}
+
+
+    
 
     // --- DELETE ---//
     @Override
@@ -187,7 +554,7 @@ public class CRUD_Operation implements Customer_DAO {
                 System.out.println("Success! Customer with ID:  " + targetId + " has been deleted.");
             } else {
                 // M4 change start ---
-                throw new CustomerNotFoundException("Delete failed: Customer with ID " + targetId + " does not exist in the database.");
+                throw new CustomerNotFoundException("Delete failed: Customer with ID " + targetId + " does not exist in the system.");
                 // M4 change end ---
             }
             
@@ -198,93 +565,27 @@ public class CRUD_Operation implements Customer_DAO {
 
 
 
-	@Override
-	public void showAllCourses() {
-	      if (Database_Connectivity.conn == null) {
-	            System.out.println("No database connection!");
-	            return;
-	        }
 
-	        // 1. Simple SQL command to get everything
-	        String sql = "SELECT courses.courseName AS Courses, staff.name AS Trainers, courses.session, courses.cost AS Price\r\n"
-	        		+ "FROM courses\r\n"
-	        		+ "INNER JOIN staff \r\n"
-	        		+ "ON courses.trainer_id = staff.id;";
-	        
-	        // 2. Create a Statement and a ResultSet to hold the downloaded data
-	        try (Statement stmt = Database_Connectivity.conn.createStatement();
-	             ResultSet rs = stmt.executeQuery(sql)) {
-	            
-	            System.out.println("\n--- Gym Course List ---");
-	            
-	            // 3. Loop through every row the database returned
-	            while (rs.next()) {
-	                // Extract the data from the current row
-	               
-	                String name = rs.getString("Courses");
-	                String trainersName = rs.getString("Trainers");
-	                String session = rs.getString("session");
-	                String cost = rs.getString("price");
-	             
-	                
-	                // Print it out neatly
-	             // Corrected labels and 4 placeholders for 4 variables
-	                System.out.printf("Course: %-20s | Trainer: %-20s | Session: %-10s | Price: %s\n", 
-	                                   name, trainersName, session, cost);
-	            }
-	            System.out.println("-------------------------");
-	            
-	        } catch (SQLException e) {
-	            System.out.println("Problem reading courses: " + e.getMessage());
-	        }
+
+
+
+
+
+
+
+
+
+
+
 	
+
+
+
+   
 		
-	}
-
-
-
-	@Override
-	public void showAllTrainers() {
-	     if (Database_Connectivity.conn == null) {
-	            System.out.println("No database connection!");
-	            return;
-	        }
-
-	        // 1. Simple SQL command to get everything
-	        String sql = "SELECT * FROM staff";
-	        
-	        // 2. Create a Statement and a ResultSet to hold the downloaded data
-	        try (Statement stmt = Database_Connectivity.conn.createStatement();
-	             ResultSet rs = stmt.executeQuery(sql)) {
-	            
-	            System.out.println("\n--- Gym Trainers List ---");
-	            
-	            // 3. Loop through every row the database returned
-	            while (rs.next()) {
-	                // Extract the data from the current row
-	            	int id = rs.getInt("id");
-	                String name = rs.getString("name");
-	                String email = rs.getString("email");
-	                String phone = rs.getString("phoneNum");
-	                String certi = rs.getString("certificate");
-	                String exp = rs.getString("yearsOfExperience");
-	                String workoutExp = rs.getString("yearsOfWorkingOut");
-	                String achievement = rs.getString("achievement");
-	             
-	                
-	                // Print it out neatly
-	             // Corrected labels and 4 placeholders for 4 variables
-	                System.out.printf("%-3d | %-15s | %-28s| %-15s | %-30s | %-15s | %-15s\n", 
-                            id, name, email, phone,certi, exp, workoutExp, achievement);
-	            }
-	            System.out.println("-------------------------");
-	            
-	        } catch (SQLException e) {
-	            System.out.println("Problem reading Staffs: " + e.getMessage());
-	        }
+		
+		
 	
-		
-	}
 }
 
 
