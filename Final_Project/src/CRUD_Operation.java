@@ -102,31 +102,31 @@ public class CRUD_Operation implements Customer_DAO {
 
 //SEARCG FOR COURSE  IN COURSES LIST
 	public Course searchCourse(int Id) throws CourseNotFoundException  {
-	    // 1. Check if the database connection is established
+	    //  Check if the database connection is established
 	    if (Database_Connectivity.conn == null) {
 	        System.out.println("No database connection!");
 	        return null;
 	    }
 
-	    // 2. Define the SQL query using a '?' as a placeholder for security (prevents SQL Injection)
+	    // Define the SQL query using a '?' as a placeholder for security (prevents SQL Injection)
 	    String sql = "SELECT c.*, s.name AS ptName \r\n"
 	    		+ "FROM courses c \r\n"
 	    		+ "JOIN staff s ON c.trainer_id = s.id \r\n"
 	    		+ "WHERE c.id = ?";
 	    Course foundCourse = null;
 	    
-	    // 3. Use try-with-resources to ensure the PreparedStatement is closed automatically
+	    //  Use try-with-resources to ensure the PreparedStatement is closed automatically
 	    try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
 	        
-	        // 4. Bind the integer ID to the first '?' in the SQL query
+	        // Bind the integer ID to the first '?' in the SQL query
 	        pstmt.setInt(1, Id); 
 	        
-	        // 5. Execute the query and store results in a ResultSet
+	        //  Execute the query and store results in a ResultSet
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            // Check if at least one row was returned
 	            if (rs.next()) { 
 	                
-	                // 6. Extract data from the current row using column names from your database schema
+	                //  Extract data from the current row using column names from your database schema
 	                int id = rs.getInt("id");
 	                String courseName = rs.getString("courseName");
 	                int session = rs.getInt("session");
@@ -135,7 +135,7 @@ public class CRUD_Operation implements Customer_DAO {
 	                double cost = rs.getDouble("cost"); 
 	               
 	              
-	                // 7. Handle the new 'status' attribute
+	                //  Handle the new 'status' attribute
 	                // Retrieve the string value ('FULL' or 'NOT FULL')
 	                String statusStr = rs.getString("status");
 	                
@@ -144,13 +144,13 @@ public class CRUD_Operation implements Customer_DAO {
 	                Course.courseStatus courseStatus = Course.courseStatus.valueOf(statusStr.replace(" ", "_").toUpperCase());
 	                String ptName = rs.getString("ptName");
 
-	                // 8. Create a new Course object using the retrieved data
+	                //  Create a new Course object using the retrieved data
 	                foundCourse = new Course( id, courseName, session,cost, ptName, courseStatus);
 	                
 	                System.out.println(foundCourse.toString());
 	                
 	            } else {
-	                // 9. If rs.next() is false, the ID does not exist in the database
+	                //  If rs.next() is false, the ID does not exist in the database
 	                throw new CourseNotFoundException("No course found with ID: " + Id);
 	            }
 	        }
@@ -204,7 +204,7 @@ public class CRUD_Operation implements Customer_DAO {
 
             // 5. Execute the command
             int rowsAffected = pstmt.executeUpdate();
-            
+            // check if there is any change, if no, then throws exception
             if (rowsAffected > 0) {
                 System.out.println("Success! Customer '" + name + "' added to the database.");
             }
@@ -241,7 +241,7 @@ public class CRUD_Operation implements Customer_DAO {
 
             // 5. Execute the command
             int rowsAffected = pstmt.executeUpdate();
-            
+            // check if there is any change, if no, then throws exception
             if (rowsAffected > 0) {
                 System.out.println("Success! '" + name + "' has been added ");
             }
@@ -259,16 +259,20 @@ public class CRUD_Operation implements Customer_DAO {
     
     
  // --- READ (ALL) ---
+	
+	
+	// SHOW ALL THE CUSTOMER WHO DOES NOT ENROLL IN THE COURSES
     @Override
     public void displayAllcustomers() {
         if (Database_Connectivity.conn == null) {
             System.out.println("No database connection!");
             return;
         }
-
+// sql script
         String sql = "SELECT * FROM customers";
         
         try (Statement stmt = Database_Connectivity.conn.createStatement();
+        		//excute the script by this
              ResultSet rs = stmt.executeQuery(sql)) {
             
             System.out.println("\n================================= GYM CUSTOMER LIST =================================");
@@ -276,7 +280,7 @@ public class CRUD_Operation implements Customer_DAO {
             System.out.printf("%-4s | %-18s | %-12s | %-12s | %-25s\n", 
                               "ID", "NAME", "PHONE", "TIER", "EMAIL");
             System.out.println("-------------------------------------------------------------------------------------");
-            
+            // read and retrieve the data in order
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
@@ -295,7 +299,7 @@ public class CRUD_Operation implements Customer_DAO {
         }
     }
     
-    
+    //SHOW ALL THE COURSES
     @Override
     public void showAllCourses() {
         if (Database_Connectivity.conn == null) {
@@ -337,7 +341,7 @@ public class CRUD_Operation implements Customer_DAO {
         }
     }
 
-
+//SHOW ALL THE TRAINERS
 
     @Override
     public void showAllTrainers() {
@@ -376,7 +380,7 @@ public class CRUD_Operation implements Customer_DAO {
         }
     }
 
-
+//SHOW ALL CUSTOMER REGISTRATION
 
 	@Override
 	public void showAllRegistrations() {
