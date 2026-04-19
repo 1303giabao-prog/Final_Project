@@ -5,7 +5,7 @@ public class PT extends Person {
     private int yearsOfWorkingOut; // Personal training years
     private String achievement;
 
-    // Updated Constructor
+    //  Constructor
     public PT(String name, String email, String phoneNum, String certificate, 
                  int yearsOfExperience, int yearsOfWorkingOut, String achievement) {
         super(name, email, phoneNum);
@@ -29,6 +29,10 @@ public class PT extends Person {
     public String getAchievement() { return achievement; }
     public void setAchievement(String achievement) { this.achievement = achievement; }
 
+    
+    
+    
+    // toString method for output format
     @Override
     public String toString() {
         return String.format("--- Staff Profile ---\n" +

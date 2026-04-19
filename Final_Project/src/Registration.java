@@ -10,7 +10,7 @@ public class Registration extends Person {
 	    FREEZE,    // On a break (no time)
 	    CANCELLED, // No longer a member
 	    END   ,    // No longer a member
-	    PENDING
+	    PENDING    // NOT START THE COURSE YET
 	}
 	private Status status;
 	private int CourseId;
@@ -25,26 +25,18 @@ public class Registration extends Person {
     }
 
     // Getter and Setter for the specific attribute
-    public Status getStatus() {
-        return status;
-    }
+    public Status getStatus() {  return status; }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+    public void setStatus(Status status) {  this.status = status;  }
 
    
- // Getter for CourseId
-    public int getCourseId() {
-        return CourseId;
-    }
 
-    // Setter for CourseId
-    public void setCourseId(int CourseId) {
-        this.CourseId = CourseId;
-    }
+    public int getCourseId() { return CourseId; }
 
-    // toString method utilizing the parent's getName() method
+   
+    public void setCourseId(int CourseId) { this.CourseId = CourseId; }
+
+    // toString method for output format
     @Override
     public String toString() {
         return String.format("Status: %s | Course ID: %d | Customer: %s | Email: %s|", 

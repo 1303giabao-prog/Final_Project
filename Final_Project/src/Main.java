@@ -214,19 +214,23 @@ public class Main {
                     }
                     break;
                 case 4:
+                	// DISPLAY ALL CUSTOMERS
                 	db.displayAllcustomers();
                 	
                 	break;
                 case 5:
+                	//DISPLAY ALL COURSES
                 	db.showAllCourses();
                 	break;
                 case 6:
+                	//DISPLAY ALL TRAINERS ( STAFFS)
                 	db.showAllTrainers();
                 	break;
                 case 7:
+                	//DISPLAY ALL CUSTOMER REGISTRATION
                 	db.showAllRegistrations();
                 	break;
-                case 8:
+                case 8:// ADD NEW REGIS
                     System.out.print("Name: ");
                     String name1 = sc.nextLine();
                     System.out.print("Email: ");
@@ -258,9 +262,9 @@ public class Main {
                     	
                     
                     System.out.print("Status (ACTIVE, FREEZE, CANCELLED, END, PENDING): ");
-                    String sta = sc.nextLine().toUpperCase();
+                    String sta = sc.nextLine().toUpperCase();// to make the convert to consistent format (uppercase)
                     
-                  
+                  //to validate the status
                     Registration.Status status = validateStatusInput(sta);
                    
               
@@ -268,7 +272,7 @@ public class Main {
                     // 4. Finally, it implements the code to save to the database
                     db.addRegistration(name1, email1, phone1, CourseId, status);
                     break;
-                case 9:
+                case 9://UPDATE REGIS STATUS
                     System.out.print("Customer's name: ");
                     String Name = sc.nextLine();
                   // Clear buffer
@@ -299,7 +303,7 @@ public class Main {
                         }
                     }
                     break;
-                case 10:
+                case 10://UPDATE COURSE STATUS
                     System.out.print("Course ID: ");
                     int courseid = sc.nextInt();
                     sc.nextLine(); // Clear buffer

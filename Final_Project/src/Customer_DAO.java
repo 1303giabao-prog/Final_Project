@@ -2,7 +2,7 @@
 // I added throws so the custom exception so it can be used when the customer is not found
 
 import exceptions.CourseNotFoundException;
-
+// MUST IMPLEMENT METHOD
 public interface Customer_DAO {
     Customer searchCustomer(int id) throws CustomerNotFoundException;
     void addCustomer(String name, String email, String phoneNum, Customer.Membership membership);

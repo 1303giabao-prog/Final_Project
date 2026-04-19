@@ -23,7 +23,7 @@ public class Customer extends Person {
         this.membership = membership;
     }
 
-    // toString method
+    // toString method for output format
     @Override
     public String toString() {
         // We use \n to move the text to the next line for a cleaner look

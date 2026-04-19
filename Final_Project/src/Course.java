@@ -43,7 +43,7 @@ public class Course {
 
     public void setStatus(courseStatus status) { this.status = status; }
 
-    // Display Course Details
+    // Display Course Details,  toString method for output format
     @Override
     public String toString() {
         return String.format("Course: %-15s | Sessions: %-2d | Cost: $%-6.2f | Trainer: %s |Status: %s|", 
