@@ -14,17 +14,21 @@ public class Registration extends Person {
 	}
 	private Status status;
 	private int CourseId;
-  
+	private int registration_date;
 
     // Constructor
-    public Registration(String name, String email, String phoneNum, Status status, int CourseId) {
+    public Registration(String name, String email, String phoneNum, Status status, int CourseId, int registration_date) {
         // 'super' sends the person details to the Person constructor
         super(name, email, phoneNum);
         this.status = status;
         this.CourseId = CourseId;
+        this.registration_date = registration_date;
     }
 
     // Getter and Setter for the specific attribute
+    public int getDate() {  return registration_date; }
+
+    public void setDate( int registration_date) {  this.registration_date = registration_date;  }
     public Status getStatus() {  return status; }
 
     public void setStatus(Status status) {  this.status = status;  }

@@ -28,8 +28,8 @@ public class Main {
     // M4 change start ---
     // Helper method to validate menu choice
     public static void validateMenuChoice(int choice) throws InvalidMenuChoiceException {
-        if (choice < 0 || choice > 10) {
-            throw new InvalidMenuChoiceException("Please choose a valid menu option from 0 to 10");
+        if (choice < 0 || choice > 13) {
+            throw new InvalidMenuChoiceException("Please choose a valid menu option from 0 to 13");
         }
     }
 
@@ -102,6 +102,10 @@ public class Main {
             System.out.println("8. Add new registration");
             System.out.println("9. Update registration's status");
             System.out.println("10. Update course's status");
+            System.out.println("11. Display monthly report");
+            System.out.println("12. Display Yearly Revenue");
+            System.out.println("13. Add Monthly Revenue Report");
+            
             System.out.println("0. Exit");
             System.out.print("Enter choice: ");
             choice = sc.nextInt();
@@ -333,7 +337,68 @@ public class Main {
                             System.out.println("Course status Error: " + e.getMessage());
                         }
                     }
+                    break;
+                case 11:
+                	db. displayAllMonthlyRevenue();
+                	break;
+                case 12:
+                	  System.out.print("year: ");
+                      int year = sc.nextInt();
+                      sc.nextLine(); 
+                	db.displayYearlyRevenueReport(year);
+                	break;
+                	
+                	
+                	//ADD TO REVENUE REPORT
+                case 13:
+                    System.out.println("\n--- Record Monthly Revenue to History ---");
                     
+                    // 1. Get Month and Year from user with Exception Handling
+                    int monthNum = 0;
+                    while (true) {
+                        try {
+                            System.out.print("Enter Month Number (1-12): ");
+                            monthNum = sc.nextInt();
+                            
+                            if (monthNum < 1 || monthNum > 12) {
+                                // This triggers your custom exception
+                                throw new InvalidMenuChoiceException("Invalid month! Please enter a number between 1 and 12.");
+                            }
+                            break; // Exit loop if month is valid
+                        } catch (InvalidMenuChoiceException e) {
+                            System.out.println("Error: " + e.getMessage());
+                        } catch (Exception e) {
+                            System.out.println("Error: Please enter a valid numeric month.");
+                            sc.next(); // Clear scanner buffer
+                        }
+                    }
+                    
+                    System.out.print("Enter Year (e.g., 2026): ");
+                    int yearNum = sc.nextInt();
+
+                    // 2. Run the calculation logic
+                    MonthlyRevenue calculatedReport = db.calculateCurrentRevenue(monthNum, yearNum);
+
+                    // 3. Show the result to the user before saving
+                    System.out.println("\n-------------------------------------------");
+                    System.out.println("SYSTEM CALCULATION RESULT:");
+                    System.out.println("Month: " + calculatedReport.getMonth());
+                    System.out.println("Year:  " + calculatedReport.getYear());
+                    System.out.printf("Total Active Revenue: $%,.2f\n", calculatedReport.getAmount());
+                    System.out.println("-------------------------------------------");
+
+                    // 4. Confirm Save
+                    System.out.print("Do you want to save this record to the database? (y/n): ");
+                    String confirm = sc.next();
+
+                    if (confirm.equalsIgnoreCase("y")) {
+                        db.addMonthlyRevenue(calculatedReport);
+                    } else {
+                        System.out.println("Save cancelled. Returning to menu.");
+                    }
+                    break;
+           
+                	
                 	
 
             }

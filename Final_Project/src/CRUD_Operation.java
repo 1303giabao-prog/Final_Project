@@ -81,10 +81,11 @@ public class CRUD_Operation implements Customer_DAO {
 	                String phone = rs.getString("phoneNum");
 	                int courseId = rs.getInt("course_id");
 	                String sta = rs.getString("status");
+	                int date = rs.getInt("date");
 	               Registration.Status regstatus =  Registration.Status.valueOf(sta);
 
 	          
-	                foundReg = new Registration( name1, email, phone, regstatus, courseId);
+	                foundReg = new Registration( name1, email, phone, regstatus, courseId, date);
 	                
 	                System.out.println("Customer found: " + foundReg.toString());
 	            } else {
@@ -568,13 +569,148 @@ public class CRUD_Operation implements Customer_DAO {
     }
 
 
+    
+    
+    
+ 
+//FINANCIAL
 
+        
+ 
+    
+        
+        public void displayYearlyRevenueReport(int targetYear) {
+            if (Database_Connectivity.conn == null) {
+                System.out.println("Error: Database connection is not active.");
+                return;
+            }
 
+            // SQL: Sum the amounts for the specific year from the monthly_revenue table
+            String sql = "SELECT SUM(total_amount) AS yearly_total FROM monthly_revenue WHERE year = ?";
 
+            try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
+                
+                pstmt.setInt(1, targetYear);
+                ResultSet rs = pstmt.executeQuery();
 
+                if (rs.next()) {
+                    double total = rs.getDouble("yearly_total");
 
+                    System.out.println("\n===========================================");
+                    System.out.println("     ANNUAL REVENUE REPORT: " + targetYear);
+                    System.out.println("===========================================");
+                    System.out.printf("  Total Revenue for %d:  $%,.2f\n", targetYear, total);
+                    
+                    // Logic for 2026: If it's the current year, show progress
+                    if (targetYear == 2026) {
+                        System.out.println("  Status: Year-to-Date (YTD)");
+                    }
+                    
+                    System.out.println("===========================================");
+                }
 
+            } catch (SQLException e) {
+                System.out.println("Database Error (Yearly Report): " + e.getMessage());
+            }
+        }
 
+	//ADD NEW MONTHLY REVENUE
+        public void addMonthlyRevenue(MonthlyRevenue revenueObj) {
+            if (Database_Connectivity.conn == null) return;
+
+            // Change INSERT to REPLACE. 
+            // This tells MariaDB: "If it exists, delete the old one and put the new one."
+            String sql = "REPLACE INTO monthly_revenue (month_name, year, total_amount) VALUES (?, ?, ?)";
+
+            try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
+                pstmt.setString(1, revenueObj.getMonth());
+                pstmt.setInt(2, revenueObj.getYear());
+                pstmt.setDouble(3, revenueObj.getAmount());
+
+                pstmt.executeUpdate();
+                System.out.println("-------------------------------------------");
+                System.out.println("Successfully UPDATED revenue for " + revenueObj.getMonth() + "!");
+                System.out.println("-------------------------------------------");
+                
+            } catch (SQLException e) {
+                // You won't get 'Duplicate entry' errors anymore!
+                System.out.println("Database Error: " + e.getMessage());
+            }
+        }
+
+//CALCULATE EACH MONTH REVENUE
+
+        public MonthlyRevenue calculateCurrentRevenue(int monthInt, int year) {
+            double totalRevenue = 0.0;
+            
+            // SQL: Sum costs where the registration date matches the month and year provided
+            String sql = "SELECT SUM(c.cost) AS total_revenue " +
+                         "FROM registrations r " +
+                         "JOIN courses c ON r.course_id = c.id " +
+                         "WHERE r.status = 'ACTIVE' " +
+                         "AND MONTH(r.registration_date) = ? " +
+                         "AND YEAR(r.registration_date) = ?";
+
+            try (PreparedStatement pstmt = Database_Connectivity.conn.prepareStatement(sql)) {
+                pstmt.setInt(1, monthInt);
+                pstmt.setInt(2, year);
+                
+                ResultSet rs = pstmt.executeQuery();
+
+                if (rs.next()) {
+                    totalRevenue = rs.getDouble("total_revenue");
+                }
+            } catch (SQLException e) {
+                System.out.println("Calculation Error: " + e.getMessage());
+            }
+
+            // Convert month integer back to String for the object (e.g., 4 -> "April")
+            String monthName = java.time.Month.of(monthInt).name();
+            
+            return new MonthlyRevenue(monthName, totalRevenue, year);
+        }
+
+        
+        //DISPLAY MONTHLY REVENUE REPORT
+        public void displayAllMonthlyRevenue() {
+            if (Database_Connectivity.conn == null) {
+                System.out.println("Error: Database connection is not active.");
+                return;
+            }
+
+            // SQL: Order by year and then by id to keep months in chronological order
+            String sql = "SELECT month_name, total_amount, year FROM monthly_revenue ORDER BY year DESC, id DESC";
+
+            System.out.println("\n" + "=".repeat(50));
+            System.out.printf("%-10s | %-12s | %-15s\n", "YEAR", "MONTH", "REVENUE");
+            System.out.println("-".repeat(50));
+
+            try (Statement stmt = Database_Connectivity.conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+
+                boolean hasData = false;
+                while (rs.next()) {
+                    hasData = true;
+                    // Map DB columns to variables
+                    String month = rs.getString("month_name");
+                    double amount = rs.getDouble("total_amount");
+                    int year = rs.getInt("year");
+
+                    // Create object and use its toString (or print directly for custom formatting)
+                    System.out.printf("%-10d | %-12s | $%,12.2f\n", year, month, amount);
+                }
+
+                if (!hasData) {
+                    System.out.println("No financial records found in the database.");
+                }
+
+            } catch (SQLException e) {
+                System.out.println("Database Error (Display Revenue): " + e.getMessage());
+            }
+            System.out.println("=".repeat(50) + "\n");
+        }
+
+	
 
 
 

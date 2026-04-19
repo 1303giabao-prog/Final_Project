@@ -21,6 +21,12 @@ public interface Customer_DAO {
 
     public Registration searchRegistration(String name)throws CustomerNotFoundException;
 	public Course searchCourse(int Id) throws CourseNotFoundException;
+	void displayYearlyRevenueReport(int targetYear);
+	MonthlyRevenue calculateCurrentRevenue(int m, int y);
+	void addMonthlyRevenue(MonthlyRevenue report);
+	
+	void displayAllMonthlyRevenue();
+	
 }
 	
 //M4 J change end ---
