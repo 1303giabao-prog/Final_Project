@@ -46,7 +46,7 @@ public class Course {
     // Display Course Details
     @Override
     public String toString() {
-        return String.format("Course: %-15s | Sessions: %-2d | Cost: $%-6.2f | Trainer: %s", 
-                             courseName, session, cost, ptName);
+        return String.format("Course: %-15s | Sessions: %-2d | Cost: $%-6.2f | Trainer: %s |Status: %s|", 
+                             courseName, session, cost, ptName, status);
     }
 }

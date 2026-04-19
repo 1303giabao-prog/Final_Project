@@ -47,7 +47,7 @@ public class Registration extends Person {
     // toString method utilizing the parent's getName() method
     @Override
     public String toString() {
-        return String.format("Registration [%s] | Course ID: %d | Customer: %s (Email: %s)", 
+        return String.format("Status: %s | Course ID: %d | Customer: %s | Email: %s|", 
                              status, CourseId, getName(), getEmail());
     }
 }
